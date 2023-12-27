@@ -9,7 +9,7 @@ services:
     privileged: true
     command: /bin/zsh
     network_mode: host
-    working_dir: /home/user/IoT_Final/firebase_ws
+    working_dir: /home/node/IoT_Final/firebase_ws
     environment:
       - DISPLAY=${DISPLAY}
     volumes:
@@ -19,4 +19,4 @@ services:
       - /etc/localtime:/etc/localtime:ro
       # Mount X11 server
       - /tmp/.X11-unix:/tmp/.X11-unix
-      - ../..:/home/user/IoT_Final
+      - ../..:/home/node/IoT_Final

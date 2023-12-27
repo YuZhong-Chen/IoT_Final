@@ -4,7 +4,7 @@
     "dockerComposeFile": "../docker/compose.yaml",
     "service": "firebase-ws",
     // workspace settings
-    "workspaceFolder": "/home/user/IoT_Final/firebase_ws",
+    "workspaceFolder": "/home/node/IoT_Final/firebase_ws",
     // Vscode extensions
     "customizations": {
         "vscode": {
@@ -13,7 +13,9 @@
                 "mhutchie.git-graph",
                 "streetsidesoftware.code-spell-checker",
                 "github.copilot",
-                "oderwat.indent-rainbow"
+                "oderwat.indent-rainbow",
+                "dbaeumer.vscode-eslint",
+                "skyran.js-jsx-snippets"
             ]
         }
     },
