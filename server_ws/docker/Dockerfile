@@ -23,7 +23,12 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     wget \
     build-essential \
     python3 \
+    python3-pip \
     && rm -rf /var/lib/apt/lists/*
+
+# Install python packages
+RUN pip3 install \
+    firebase-admin
 
 # Create the user
 RUN groupadd --gid $USER_GID $USERNAME \

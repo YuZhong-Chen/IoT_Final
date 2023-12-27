@@ -1,6 +1,22 @@
 #!/usr/bin/env python3
 
 import socket
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
+
+cred = credentials.Certificate("../secret/firebase-admin-SDK.json")
+
+# Initialize the app with a service account, granting admin privileges
+firebase_admin.initialize_app(
+    cred,
+    {
+        "databaseURL": "https://iot-finalproject-968b9-default-rtdb.asia-southeast1.firebasedatabase.app/"
+    },
+)
+
+# As an admin, the app has access to read and write all data, regardless of Security Rules
+database_reference = db.reference("/")
 
 
 def UDP_Server():
@@ -33,6 +49,12 @@ def UDP_Server():
 
             # Print the data received
             print("Received: " + str(data))
+            
+            push_data = {
+                "data": data,
+            }
+            
+            database_reference.push(push_data)
 
             # Send data to the client
             client.send(data.encode())
