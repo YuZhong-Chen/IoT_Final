@@ -1,0 +1,22 @@
+version: '3'
+services:
+  server-ws:
+    build: .
+    image: yuzhong1214/server-ws
+    container_name: server-ws
+    stdin_open: true
+    tty: true
+    privileged: true
+    command: /bin/zsh
+    network_mode: host
+    working_dir: /home/user/IoT_Final/server_ws
+    environment:
+      - DISPLAY=${DISPLAY}
+    volumes:
+      # Mount local timezone into container. ( Readonly )
+      # Reference: https://stackoverflow.com/questions/57607381/how-do-i-change-timezone-in-a-docker-container
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      # Mount X11 server
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ../..:/home/user/IoT_Final

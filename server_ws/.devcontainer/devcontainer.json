@@ -1,0 +1,26 @@
+/* Reference: https://aka.ms/devcontainer.json */
+{
+    "name": "UDP/TCP server",
+    "dockerComposeFile": "../docker/compose.yaml",
+    "service": "server-ws",
+    // workspace settings
+    "workspaceFolder": "/home/user/IoT_Final/server_ws",
+    // Vscode extensions
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cpptools",
+                "ms-vscode.cpptools-themes",
+                "twxs.cmake",
+                "donjayamanne.python-extension-pack",
+                "eamodio.gitlens",
+                "mhutchie.git-graph",
+                "streetsidesoftware.code-spell-checker",
+                "ms-iot.vscode-ros",
+                "github.copilot"
+            ]
+        }
+    },
+    // Lifecycle scripts
+    "postCreateCommand": "${containerWorkspaceFolder}/.devcontainer/postCreateCommand.sh"
+}
