@@ -1,0 +1,22 @@
+/* Reference: https://aka.ms/devcontainer.json */
+{
+    "name": "Firebase Workspace",
+    "dockerComposeFile": "../docker/compose.yaml",
+    "service": "firebase-ws",
+    // workspace settings
+    "workspaceFolder": "/home/user/IoT_Final/firebase_ws",
+    // Vscode extensions
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "eamodio.gitlens",
+                "mhutchie.git-graph",
+                "streetsidesoftware.code-spell-checker",
+                "github.copilot",
+                "oderwat.indent-rainbow"
+            ]
+        }
+    },
+    // Lifecycle scripts
+    "postCreateCommand": "${containerWorkspaceFolder}/.devcontainer/postCreateCommand.sh"
+}
