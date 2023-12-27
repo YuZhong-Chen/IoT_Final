@@ -3,30 +3,44 @@
 import socket
 
 
-def server_program():
-    # get the hostname
+def UDP_Server():
+    # Set up the host and port
     host = "192.168.1.103"
-    port = 5000  # initiate port no above 1024
+    port = 5000
 
-    server_socket = socket.socket()  # get instance
-    # look closely. The bind() function takes tuple as argument
-    server_socket.bind((host, port))  # bind host address and port together
+    # Get instance
+    server_socket = socket.socket()
 
-    # configure how many client the server can listen simultaneously
-    server_socket.listen(2)
-    conn, address = server_socket.accept()  # accept new connection
-    print("Connection from: " + str(address))
+    # Bind host address and port
+    server_socket.bind((host, port))
+
+    # Configure how many client the server can listen simultaneously
+    server_socket.listen(4)
+
+    # Main loop
     while True:
-        # receive data stream. it won't accept data packet greater than 1024 bytes
-        data = conn.recv(1024).decode()
-        if not data:
-            # if data is not received break
-            break
-        print("from connected user: " + str(data))
-        conn.send(data.encode())  # send data to the client
+        # Accept new connection
+        client, address = server_socket.accept()
+        print("Connection from: " + str(address))
 
-    conn.close()  # close the connection
+        while True:
+            # Receive data stream. it won't accept data packet greater than 1024 bytes
+            data = client.recv(1024).decode()
+
+            # If data is not received, break
+            if not data:
+                break
+
+            # Print the data received
+            print("Received: " + str(data))
+
+            # Send data to the client
+            client.send(data.encode())
+
+        # Close the connection
+        client.close()
+        print("Connection closed.")
 
 
 if __name__ == "__main__":
-    server_program()
+    UDP_Server()
