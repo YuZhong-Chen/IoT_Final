@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import socket
+from datetime import datetime
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
@@ -41,23 +42,41 @@ def UDP_Server():
 
         while True:
             # Receive data stream. it won't accept data packet greater than 1024 bytes
-            data = client.recv(1024).decode()
+            recv_data = client.recv(1024).decode()
 
             # If data is not received, break
-            if not data:
+            if not recv_data:
                 break
 
             # Print the data received
-            print("Received: " + str(data))
-            
+            print("Received: " + recv_data)
+
+            # Convert string to int
+            try:    
+                sensor_id = int(recv_data.split(" ")[0])
+                data = int(recv_data.split(" ")[1])
+            except Exception as e:
+                print("Error: " + str(e))
+                client.send("Error format".encode())
+                break
+
+            # Get current time
+            current_time = datetime.now().strftime("%H:%M:%S")
+
+            # Prepare data to push to firebase
             push_data = {
-                "data": data,
+                "Time": current_time,
+                "Data": data,
             }
-            
-            database_reference.push(push_data)
+
+            # Push data to firebase
+            if sensor_id == 1:
+                database_reference.child("Sensor1").push(push_data)
+            elif sensor_id == 2:
+                database_reference.child("Sensor2").push(push_data)
 
             # Send data to the client
-            client.send(data.encode())
+            client.send(recv_data.encode())
 
         # Close the connection
         client.close()
