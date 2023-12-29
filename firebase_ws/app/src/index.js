@@ -1,129 +1,106 @@
 import Chart from "../node_modules/chart.js/auto";
 import './index.css';
 
-var data1 = [
-    { "Time": "15:30:00", "Volume": NaN },
-    { "Time": "13:00:00", "Volume": 1659 },
-    { "Time": "15:00:00", "Volume": 1050 },
-    { "Time": "16:00:00", "Volume": 1200 },
-    { "Time": "10:00:00", "Volume": 1138 },
-    { "Time": "18:00:00", "Volume": 1386 },
-    { "Time": "10:01:00", "Volume": 1041 },
-    { "Time": "20:00:00", "Volume": 1734 },
-    { "Time": "20:00:01", "Volume": 1372 },
-    { "Time": "22:00:00", "Volume": 1270 },
-    { "Time": "21:00:00", "Volume": NaN },];
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, child, get } from "firebase/database";
 
-var data2 = [
-    { "Time": "05:00:00", "Volume": 1017 },
-    { "Time": "06:00:00", "Volume": 1066 },
-    { "Time": "07:00:00", "Volume": 1475 },
-    { "Time": "08:00:00", "Volume": 1270 },
-    { "Time": "09:00:00", "Volume": 1496 },
-    { "Time": "10:00:00", "Volume": 1712 },
-    { "Time": "11:00:00", "Volume": 1068 },
-    { "Time": "12:00:00", "Volume": 1018 },
-    { "Time": "13:00:00", "Volume": 1283 },
-    { "Time": "13:30:00", "Volume": NaN },
-    { "Time": "18:00:00", "Volume": 1386 },
-    { "Time": "10:01:00", "Volume": 1041 },
-    { "Time": "21:00:00", "Volume": 1372 },
-    { "Time": "22:00:00", "Volume": 1270 },
-    { "Time": "21:00:00", "Volume": NaN }];
+const firebaseConfig = {
+    databaseURL: "https://iot-finalproject-968b9-default-rtdb.asia-southeast1.firebasedatabase.app/",
+};
+initializeApp(firebaseConfig);
+const dbRef = ref(getDatabase());
 
-// Sort by time
-data1.sort((a, b) => {
-    var aTime = a.Time.split(":");
-    var bTime = b.Time.split(":");
-    return (aTime[0] * 3600 + aTime[1] * 60 + aTime[2]) - (bTime[0] * 3600 + bTime[1] * 60 + bTime[2]);
-});
-data2.sort((a, b) => {
-    var aTime = a.Time.split(":");
-    var bTime = b.Time.split(":");
-    return (aTime[0] * 3600 + aTime[1] * 60 + aTime[2]) - (bTime[0] * 3600 + bTime[1] * 60 + bTime[2]);
-});
+get(child(dbRef, "Sensor1")).then((snapshot) => {
+    if (snapshot.exists()) {
+        var data = get_data(snapshot);
+        create_chart(document.getElementById("Chart1").getContext("2d"), data, "垃圾量 - 1");
+    } else {
+        console.log("No data available");
 
-// Select the last data
-const last_data = 15;
-data1 = data1.slice(-last_data);
-data2 = data2.slice(-last_data);
-
-// Get element
-var ctx1 = document.getElementById("Chart1").getContext("2d");
-var ctx2 = document.getElementById("Chart2").getContext("2d");
-
-new Chart(ctx1, {
-    type: "line",
-    data: {
-        labels: data1.map(x => x.Time),
-        datasets: [{
-            label: "垃圾量 - 1",
-            data: data1.map(x => x.Volume),
-            spanGaps: true,
-            order: 2,
-            // Line
-            lineTension: 0.3,
-            borderColor: "#000000",
-            fill: true,
-            borderWidth: 3,
-            // Point
-            pointRadius: 4,
-            pointBackgroundColor: "#000000",
-            pointHoverRadius: 9,
-            pointHoverBorderWidth: 2,
-            pointHoverBorderColor: "#FF2626",
-            pointHoverBackgroundColor: "#FF2626",
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-
-        layout: {
-            padding: {
-                left: 10,
-                right: 10,
-                top: 10,
-                bottom: 10,
-            }
-        },
+        var data = [
+            { "Time": "00:00:00", "Data": NaN },
+            { "Time": "23:59:59", "Data": NaN },];
+        create_chart(document.getElementById("Chart1").getContext("2d"), data, "垃圾量 - 1");
     }
+}).catch((error) => {
+    console.error(error);
 });
 
-new Chart(ctx2, {
-    type: "line",
-    data: {
-        labels: data2.map(x => x.Time),
-        datasets: [{
-            label: "垃圾量 - 2",
-            data: data2.map(x => x.Volume),
-            spanGaps: true,
-            order: 2,
-            // Line
-            lineTension: 0.3,
-            borderColor: "#000000",
-            fill: true,
-            borderWidth: 3,
-            // Point
-            pointRadius: 4,
-            pointBackgroundColor: "#000000",
-            pointHoverRadius: 9,
-            pointHoverBorderWidth: 2,
-            pointHoverBorderColor: "#FF2626",
-            pointHoverBackgroundColor: "#FF2626",
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
+get(child(dbRef, "Sensor2")).then((snapshot) => {
+    if (snapshot.exists()) {
+        var data = get_data(snapshot);
+        create_chart(document.getElementById("Chart2").getContext("2d"), data, "垃圾量 - 2");
+    } else {
+        console.log("No data available");
 
-        layout: {
-            padding: {
-                left: 10,
-                right: 10,
-                top: 10,
-                bottom: 10,
-            }
-        },
+        var data = [
+            { "Time": "00:00:00", "Data": NaN },
+            { "Time": "23:59:59", "Data": NaN },];
+        create_chart(document.getElementById("Chart2").getContext("2d"), data, "垃圾量 - 2");
     }
+}).catch((error) => {
+    console.error(error);
 });
+
+const get_data = function (snapshot) {
+    var data = [];
+
+    // Get data
+    for (var key in snapshot.val()) {
+        data.push(snapshot.val()[key]);
+    }
+
+    // Sort by time
+    data.sort((a, b) => {
+        var aTime = a.Time.split(":");
+        var bTime = b.Time.split(":");
+        return (aTime[0] * 3600 + aTime[1] * 60 + aTime[2]) - (bTime[0] * 3600 + bTime[1] * 60 + bTime[2]);
+    });
+
+    // Select the last data
+    const last_data = 15;
+    data = data.slice(-last_data);
+
+    // Return data
+    return data;
+};
+
+const create_chart = function (ctx, data, label) {
+    new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: data.map(x => x.Time),
+            datasets: [{
+                label: label,
+                data: data.map(x => x.Data),
+                spanGaps: true,
+                order: 2,
+                // Line
+                lineTension: 0.3,
+                borderColor: "#000000",
+                fill: true,
+                borderWidth: 3,
+                // Point
+                pointRadius: 4,
+                pointBackgroundColor: "#000000",
+                pointHoverRadius: 9,
+                pointHoverBorderWidth: 2,
+                pointHoverBorderColor: "#FF2626",
+                pointHoverBackgroundColor: "#FF2626",
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10,
+                    top: 10,
+                    bottom: 10,
+                }
+            },
+        }
+    });
+};
