@@ -48,16 +48,27 @@ def UDP_Server():
             if not recv_data:
                 break
 
+            # Convert data from bytes to string
+            recv_data = bytes.fromhex(recv_data).decode()
+
             # Print the data received
             print("Received: " + recv_data)
 
             # Convert string to int
-            try:    
+            try:
                 sensor_id = int(recv_data.split(" ")[0])
                 data = int(recv_data.split(" ")[1])
             except Exception as e:
-                print("Error: " + str(e))
-                client.send("Error format".encode())
+                # Assemble error message
+                error_message = "Error: " + str(e)
+                print(error_message)
+                
+                # Convert error message from string to bytes
+                error_message = bytes(error_message, encoding="utf-8")
+                error_message = error_message.hex()
+                
+                # Send error message to the client
+                client.send(error_message.encode())
                 break
 
             # Get current time
@@ -76,6 +87,8 @@ def UDP_Server():
                 database_reference.child("Sensor2").push(push_data)
 
             # Send data to the client
+            recv_data = bytes(recv_data, encoding="utf-8")
+            recv_data = recv_data.hex()
             client.send(recv_data.encode())
 
         # Close the connection
