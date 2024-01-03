@@ -5,7 +5,7 @@ import socket
 
 def UDP_Client(data):
     # Set up the host and port
-    host = "192.168.1.103"
+    host = "140.114.218.56"
     port = 5000
 
     # Get instance
@@ -14,11 +14,16 @@ def UDP_Client(data):
     # Connect to the server
     client_socket.connect((host, port))
 
+    # Convert data to hex
+    data = bytes(data, encoding="utf-8")
+    data = data.hex()
+    
     # Send message to server
     client_socket.send(data.encode())
 
     # Receive response
     data = client_socket.recv(1024).decode()
+    data = bytes.fromhex(data).decode()
     print("Received from server: " + data)
 
     # Close the connection
