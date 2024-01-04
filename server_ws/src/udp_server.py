@@ -25,14 +25,21 @@ def UDP_Server():
     host = "192.168.1.103"
     port = 5000
 
-    # Get instance
-    server_socket = socket.socket()
+    isBind = False
+    while not isBind:
+        try:
+            # Get instance
+            server_socket = socket.socket()
 
-    # Bind host address and port
-    server_socket.bind((host, port))
+            # Bind host address and port
+            server_socket.bind((host, port))
 
-    # Configure how many client the server can listen simultaneously
-    server_socket.listen(4)
+            # Configure how many client the server can listen simultaneously
+            server_socket.listen(4)
+
+            isBind = True
+        except Exception as e:
+            print("Error: " + str(e))
 
     # Main loop
     while True:
@@ -40,60 +47,75 @@ def UDP_Server():
         client, address = server_socket.accept()
         print("Connection from: " + str(address))
 
-        while True:
-            # Receive data stream. it won't accept data packet greater than 1024 bytes
-            recv_data = client.recv(1024).decode()
+        # Print the current time
+        recv_time = datetime.now().strftime("%H:%M:%S")
+        print("Time: " + str(recv_time))
 
-            # If data is not received, break
-            if not recv_data:
-                break
+        try:
+            while True:
+                # Receive data stream. it won't accept data packet greater than 1024 bytes
+                recv_data = client.recv(1024)
 
-            # Convert data from bytes to string
-            recv_data = bytes.fromhex(recv_data).decode()
+                # If data is not received, break
+                if not recv_data:
+                    break
 
-            # Print the data received
-            print("Received: " + recv_data)
+                # Print the data received
+                print("Received Origin data: ")
+                print(str(recv_data))
+                print("Received Decode data: ")
+                print(str(recv_data.decode()))
 
-            # Convert string to int
-            try:
-                sensor_id = int(recv_data.split(" ")[0])
-                data = int(recv_data.split(" ")[1])
-            except Exception as e:
-                # Assemble error message
-                error_message = "Error: " + str(e)
-                print(error_message)
-                
-                # Convert error message from string to bytes
-                error_message = bytes(error_message, encoding="utf-8")
-                error_message = error_message.hex()
-                
-                # Send error message to the client
-                client.send(error_message.encode())
-                break
+                # Convert data from bytes to string
+                recv_data = bytes.fromhex(str(recv_data.decode())).decode()
 
-            # Get current time
-            current_time = datetime.now().strftime("%H:%M:%S")
+                # Convert string to int
+                try:
+                    sensor_id = int(recv_data.split(" ")[0])
+                    data = int(recv_data.split(" ")[1])
+                except Exception as e:
+                    # Assemble error message
+                    error_message = "Error: " + str(e)
+                    print(error_message)
 
-            # Prepare data to push to firebase
-            push_data = {
-                "Time": current_time,
-                "Data": data,
-            }
+                    # Convert error message from string to bytes
+                    error_message = bytes(error_message, encoding="utf-8")
+                    error_message = error_message.hex()
 
-            # Push data to firebase
-            if sensor_id == 1:
-                database_reference.child("Sensor1").push(push_data)
-            elif sensor_id == 2:
-                database_reference.child("Sensor2").push(push_data)
+                    # Send error message to the client
+                    client.send(error_message.encode())
+                    break
 
-            # Send data to the client
-            recv_data = bytes(recv_data, encoding="utf-8")
-            recv_data = recv_data.hex()
-            client.send(recv_data.encode())
+                # Get current time
+                current_time = datetime.now().strftime("%H:%M:%S")
 
-        # Close the connection
-        client.close()
-        print("Connection closed.")
+                # Prepare data to push to firebase
+                push_data = {
+                    "Time": current_time,
+                    "Data": data,
+                }
+
+                # Push data to firebase
+                if sensor_id == 1:
+                    database_reference.child("Sensor1").push(push_data)
+                elif sensor_id == 2:
+                    database_reference.child("Sensor2").push(push_data)
+
+                # Send data to the client
+                recv_data = bytes(recv_data, encoding="utf-8")
+                recv_data = recv_data.hex()
+                client.send(recv_data.encode())
+
+            # Close the connection
+            client.close()
+            print("Connection closed.")
+            print("")
+
+        except Exception as e:
+            print("Error: " + str(e))
+            client.close()
+            print("Connection closed.")
+            print("")
 
 
 if __name__ == "__main__":
