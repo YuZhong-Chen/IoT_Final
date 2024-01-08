@@ -33,6 +33,8 @@ def Request_Data(start_time, end_time, PARAM):
 
     if r.status_code != requests.codes.ok:
         print("Request Error !")
+        print("Status Code: " + str(r.status_code))
+        print("Response: " + str(r.json()))
         return None
 
     return r.json()
