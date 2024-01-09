@@ -26,22 +26,6 @@ get(child(dbRef, "Sensor1")).then((snapshot) => {
     console.error(error);
 });
 
-get(child(dbRef, "Sensor2")).then((snapshot) => {
-    if (snapshot.exists()) {
-        var data = get_data(snapshot);
-        create_chart(document.getElementById("Chart2").getContext("2d"), data, "垃圾量 - 2");
-    } else {
-        console.log("No data available");
-
-        var data = [
-            { "Time": "00:00:00", "Data": NaN },
-            { "Time": "23:59:59", "Data": NaN },];
-        create_chart(document.getElementById("Chart2").getContext("2d"), data, "垃圾量 - 2");
-    }
-}).catch((error) => {
-    console.error(error);
-});
-
 const get_data = function (snapshot) {
     var data = [];
 
